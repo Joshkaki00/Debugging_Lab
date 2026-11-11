@@ -15,6 +15,13 @@ describe('addToCart', () => {
       { id: 'sku-tshirt', qty: 2 },
     ]);
   });
+
+  test('increments qty when the same product is added again', () => {
+    let cart = [];
+    cart = addToCart(cart, 'sku-mug', 1);
+    cart = addToCart(cart, 'sku-mug', 1);
+    expect(cart).toEqual([{ id: 'sku-mug', qty: 2 }]);
+  });
 });
 
 describe('removeFromCart', () => {
