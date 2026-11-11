@@ -1,32 +1,15 @@
-# DB-2: The disappearing cart items
+# cart bug log
 
-## Bug report
-Customer added mug, t-shirt, stickers, then another mug. Cart only showed one mug.
+found the bug around line 7 in cart.js.
 
-## Expected
-Same SKU added twice should keep one line item and sum quantities (mug qty 2).
+expected: run correctly, not duplicating products/skus.
 
-## Actual
-Second add left mug at qty 1.
+line 7: `existing.qty = qty` — thought that caused a duplicate somehow.
 
-## Finding
-Around `cart/src/cart.js` line 7:
+after looking through: it overwrites the old quantity with the new one. no duplicate line, just wrong qty.
 
-```js
-existing.qty = qty; // overwrites old qty with the new click amount
-```
+wrote a test that fails because of the bug instead of proceeding past it.
 
-That assignment replaces the existing quantity instead of adding to it. No duplicate SKU lines — the line stayed, but the qty was wrong.
+fix: `existing.qty += qty`
 
-## Why tests missed it
-Existing tests only covered new products and different SKUs. Nothing added the same product twice.
-
-## Fix
-```js
-existing.qty += qty;
-```
-
-Added test: `increments qty when the same product is added again`.
-
-## Root cause
-`addToCart` set quantity to the latest add amount instead of accumulating, so repeat adds for the same SKU silently dropped prior qty.
+cart does correct now.
