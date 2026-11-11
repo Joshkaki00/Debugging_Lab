@@ -2,7 +2,7 @@
 
 found the bug around line 7 in cart.js.
 
-expected: run correctly, not duplicating products/skus.
+i expected it to run correctly, not duplicating products/skus.
 
 line 7: `existing.qty = qty` — thought that caused a duplicate somehow.
 
