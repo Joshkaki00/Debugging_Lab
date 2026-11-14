@@ -13,12 +13,18 @@ DB_PATH = Path(__file__).parent / "dashboard.db"
 
 
 def dashboard(db, user):
-    projects = db.query("SELECT * FROM projects WHERE owner_id = ?", user.id)
-    result = []
-    for p in projects:
-        tasks = db.query("SELECT * FROM tasks WHERE project_id = ?", p.id)
-        result.append({"project": p.name, "open_tasks": len([t for t in tasks if not t.done])})
-    return result
+    rows = db.query(
+        """
+        SELECT projects.name AS project,
+               COUNT(CASE WHEN tasks.done = 0 THEN 1 END) AS open_tasks
+        FROM projects
+        LEFT JOIN tasks ON tasks.project_id = projects.id
+        WHERE projects.owner_id = ?
+        GROUP BY projects.id
+        """,
+        user.id,
+    )
+    return [{"project": r.project, "open_tasks": r.open_tasks} for r in rows]
 
 
 def main():
